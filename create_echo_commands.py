@@ -35,7 +35,7 @@ conc_lists = [
 # all volumes in uL
 src_dead_vol = 15
 src_max_vol = 100
-
+transferable_vol = src_max_vol - src_dead_vol
 
 dest_final_volume = 10.0
 
@@ -79,17 +79,27 @@ stock_vols_used["water"] = 0
 for key,val in stock_vols_used.iteritems():
     stock_vols_used[key] = 0
 
-
 for instr in instruction_list:
     chem = instr.chemical
     vol = instr.volume
     stock_vols_used[chem] += vol
 
-for key,val in stock_vols_used.iteritems():
-    print str(key) + " " + str(val)
-    
+src_instruction_list = []
+well_num = 0
+for chem,total_vol in stock_vols_used.iteritems():
+    print str(chem) + " " + str(total_vol)
+    num_wells_needed = int(total_vol // transferable_vol)
+    if float(total_vol)%float(transferable_vol) > 0:
+	num_wells_needed += 1
+    print str(well_num) + " " + str(num_wells_needed)
 
-
+    vol_acc = total_vol
+    for ii in range(well_num, num_wells_needed):
+	src_well = get_well_ID(ii)
+        volume_to_transfer = src_max_vol
+        instr = InstrClass(src_well, "", volume_to_transfer, chem, False)
+        vol_acc -= volume_to_transfer
+    well_num += num_wells_needed
 
 # print instructions:
 for instr in instruction_list:
