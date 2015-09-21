@@ -75,37 +75,66 @@ for condition in product(*conc_lists):
 # now need to work out source wells and volumes and finalise instructions:
 stock_vols_used  = OrderedDict(stocks)
 stock_vols_used["water"] = 0
-
 for key,val in stock_vols_used.iteritems():
     stock_vols_used[key] = 0
 
+# find maximum volume transferred to add safety margin
+max_vol_used =  OrderedDict(stocks)
+max_vol_used["water"] = 0
+for key,val in max_vol_used.iteritems():
+    max_vol_used[key] = 0
+
+
+# calculate volumes used
 for instr in instruction_list:
     chem = instr.chemical
     vol = instr.volume
     stock_vols_used[chem] += vol
+    if vol > max_vol_used[chem]:
+	max_vol_used[chem] = vol
 
+
+# work out number of source wells needed:
 src_instruction_list = []
+src_chem_well_volume_acc = {}
 well_num = 0
 for chem,total_vol in stock_vols_used.iteritems():
+    # print str(chem) + " " + str(total_vol)
+    # add max volume safety margin
+    safety_count = (total_vol // transferable_vol) + 1
+    total_vol += (safety_count) * max_vol_used[chem]
     print str(chem) + " " + str(total_vol)
+
     num_wells_needed = int(total_vol // transferable_vol)
     if float(total_vol)%float(transferable_vol) > 0:
 	num_wells_needed += 1
     print str(well_num) + " " + str(num_wells_needed)
 
     vol_acc = total_vol
-    for ii in range(well_num, num_wells_needed):
+    chem_well_volume_acc = OrderedDict()
+    for ii in range(well_num, well_num+num_wells_needed):
 	src_well = get_well_ID(ii)
-        volume_to_transfer = src_max_vol
+        volume_to_transfer = src_dead_vol
+        if vol_acc >= transferable_vol:
+		volume_to_transfer += transferable_vol
+	else:
+		volume_to_transfer += vol_acc
         instr = InstrClass(src_well, "", volume_to_transfer, chem, False)
-        vol_acc -= volume_to_transfer
+        vol_acc -= (volume_to_transfer - src_dead_vol)
+	chem_well_volume_acc[src_well] = volume_to_transfer
+	src_instruction_list.append(instr)
+    src_chem_well_volume_acc[chem] = chem_well_volume_acc
     well_num += num_wells_needed
 
 # print instructions:
 for instr in instruction_list:
-    print "sourcePlate," + instr.source_well + ",destPlate," + instr.dest_well + "," + str(instr.volume)
     chem = instr.chemical
     vol = instr.volume
+    print "sourcePlate," + instr.source_well + ",destPlate," + instr.dest_well + "," + str(instr.volume) + ",#" + chem
+
+#print source instructions:
+for instr in src_instruction_list:
+	print "SOURCE_PREP: add " + str(instr.volume) + " of " + instr.chemical  + " to well " + instr.source_well + " in source plate"
 
 
 
