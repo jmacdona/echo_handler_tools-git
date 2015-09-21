@@ -27,9 +27,9 @@ stocks = OrderedDict([
 
 # these must be in the same order as declared in stocks dictionary
 conc_lists = [
-    [0,1,2],			# ATP concs
-    [0,4,5],			# NAD concs
-    [0,6,7]			# MAD concs
+    [0,1,2,3,4,5],			# ATP concs
+    [0,4,5,6,7,8],			# NAD concs
+    [0,6,7,8,9,10]			# MAD concs
 ]
 
 # all volumes in uL
@@ -126,6 +126,29 @@ for chem,total_vol in stock_vols_used.iteritems():
     src_chem_well_volume_acc[chem] = chem_well_volume_acc
     well_num += num_wells_needed
 
+print src_chem_well_volume_acc
+
+# calculate source wells
+for instr in instruction_list:
+    chem = instr.chemical
+    vol = instr.volume
+    src_wells = src_chem_well_volume_acc[chem]
+    well_found = False
+    found_well = ""
+    for well,vol_avail in src_wells.iteritems():
+    	if vol < (vol_avail - src_dead_vol):
+    		well_found = True
+    		found_well = well
+    		break
+    if well_found == True:
+        src_wells[found_well] -= vol
+	instr.source_well = found_well
+    else:
+	print "ERROR: bug finding available well!"
+	sys.exit()
+
+print src_chem_well_volume_acc    
+
 # print instructions:
 for instr in instruction_list:
     chem = instr.chemical
@@ -134,7 +157,10 @@ for instr in instruction_list:
 
 #print source instructions:
 for instr in src_instruction_list:
-	print "SOURCE_PREP: add " + str(instr.volume) + " of " + instr.chemical  + " to well " + instr.source_well + " in source plate"
+	conc = 55500
+	if instr.chemical != 'water':
+		conc = stocks[instr.chemical]
+	print "SOURCE_PREP: add " + str(instr.volume) + " uL of " + str(conc) + " mM " + instr.chemical  + " to well " + instr.source_well + " in source plate"
 
 
 
