@@ -1,5 +1,6 @@
 from itertools import product
 from collections import OrderedDict
+import sys
 
 def get_well_ID(well_number):
 	letters = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','','','','','','','','','','','']
@@ -32,6 +33,10 @@ conc_lists = [
 ]
 
 # all volumes in uL
+src_dead_vol = 15
+src_max_vol = 100
+
+
 dest_final_volume = 10.0
 
 
@@ -61,8 +66,36 @@ for condition in product(*conc_lists):
     instr = InstrClass("", dest_well, volume_to_transfer, "water", False)
     instruction_list.append(instr)
     print "transfer: " + str(volume_to_transfer) + " from water stock to destination well: " + dest_well + " for final volume " + str(dest_final_volume)
+    if volume_to_transfer < 0:
+	print "ERROR: stock concentrations are not concentrated enough - can not create instructions"
+        sys.exit()
         	
     count += 1
+
+# now need to work out source wells and volumes and finalise instructions:
+stock_vols_used  = OrderedDict(stocks)
+stock_vols_used["water"] = 0
+
+for key,val in stock_vols_used.iteritems():
+    stock_vols_used[key] = 0
+
+
+for instr in instruction_list:
+    chem = instr.chemical
+    vol = instr.volume
+    stock_vols_used[chem] += vol
+
+for key,val in stock_vols_used.iteritems():
+    print str(key) + " " + str(val)
+    
+
+
+
+# print instructions:
+for instr in instruction_list:
+    print "sourcePlate," + instr.source_well + ",destPlate," + instr.dest_well + "," + str(instr.volume)
+    chem = instr.chemical
+    vol = instr.volume
 
 
 
