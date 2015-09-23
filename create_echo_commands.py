@@ -63,8 +63,9 @@ for condition in product(*conc_lists):
 
     # finally make up volume with water:
     volume_to_transfer = dest_final_volume - total_well_vol
-    instr = InstrClass("", dest_well, volume_to_transfer, "water", False)
-    instruction_list.append(instr)
+    if volume_to_transfer > 0:
+        instr = InstrClass("", dest_well, volume_to_transfer, "water", False)
+        instruction_list.append(instr)
     print "transfer: " + str(volume_to_transfer) + " from water stock to destination well: " + dest_well + " for final volume " + str(dest_final_volume)
     if volume_to_transfer < 0:
 	print "ERROR: stock concentrations are not concentrated enough - can not create instructions"
