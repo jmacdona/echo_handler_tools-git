@@ -154,7 +154,7 @@ print src_chem_well_volume_acc
 for instr in instruction_list:
     chem = instr.chemical
     vol = instr.volume
-    print "sourcePlate," + instr.source_well + ",destPlate," + instr.dest_well + "," + str(instr.volume) + ",#" + chem
+    print "sourcePlate," + instr.source_well + ",destPlate," + instr.dest_well + "," + str(instr.volume*1000.) + ",#" + chem
 
 #print source instructions:
 for instr in src_instruction_list:
