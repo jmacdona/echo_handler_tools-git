@@ -34,7 +34,7 @@ conc_lists = [
 
 # all volumes in uL
 src_dead_vol = 15
-src_max_vol = 100
+src_max_vol = 65
 transferable_vol = src_max_vol - src_dead_vol
 
 dest_final_volume = 10.0
