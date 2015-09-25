@@ -150,6 +150,7 @@ for instr in instruction_list:
 
 print src_chem_well_volume_acc    
 
+print "Source Plate Barcode,Source Well,Destination Plate Barcode,Destination Well,Transfer Volume"
 # print instructions:
 for instr in instruction_list:
     chem = instr.chemical
