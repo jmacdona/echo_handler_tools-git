@@ -137,7 +137,8 @@ for instr in instruction_list:
     well_found = False
     found_well = ""
     for well,vol_avail in src_wells.iteritems():
-    	if vol < (vol_avail - src_dead_vol):
+	# this was vol <= (vol_avail - src_dead_vol) but this causes bugs
+    	if vol <= (vol_avail - src_dead_vol):
     		well_found = True
     		found_well = well
     		break
