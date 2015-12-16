@@ -44,7 +44,7 @@ instruction_list = []
 count = 0
 for condition in product(*conc_lists):
     dest_well = get_well_ID(count)
-    print dest_well + "\t" +str(condition)
+    print "CONDITION," + dest_well + "," +str(condition)
 
     total_well_vol = 0
     # loop over stocks to create instructions:
