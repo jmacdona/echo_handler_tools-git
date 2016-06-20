@@ -17,7 +17,7 @@ def get_well_ID(well_number, plate_type):
 	row = well_number // num_rows
 	col = (well_number % num_rows) + 1
     	row_letter = letters[row] 
-	return row_letter + str(col)
+	return (row_letter + str(col), row_letter, str(col))
 
 class InstrClass(object):
         def __init__(self, source_well, dest_well, volume, chemical, source_instantiated):
@@ -65,10 +65,16 @@ dest_final_volume = 10.0
 
 instruction_list = []
 count = 0
+
+sys.stdout.write("CONDITION," + "DEST_ROW" + "," + "DEST_COL" + "," + "DEST_WELL"  )
+for stock in stocks:
+   sys.stdout.write("," + str(stock))
+sys.stdout.write("\n")
+
 for condition in product(*conc_lists):
-    dest_well = get_well_ID(count, dest_plate_type)
+    (dest_well, dest_row, dest_col) = get_well_ID(count, dest_plate_type)
     #print "CONDITION," + dest_well + "," +str(condition)
-    sys.stdout.write("CONDITION," + dest_well )
+    sys.stdout.write("CONDITION," + dest_row + "," + dest_col + "," + dest_well  )
     for conc in condition:
         sys.stdout.write("," + str(conc) )
     sys.stdout.write("\n")
@@ -83,7 +89,7 @@ for condition in product(*conc_lists):
 	if conc > 0:
 	    volume_to_transfer = (float(conc)/float(stock_conc)) * float(dest_final_volume)
 	    instr = InstrClass("", dest_well, volume_to_transfer, stock_chem, False)
-	    print "transfer: " + str(volume_to_transfer) + " from " + stock_chem + ":" + str(stock_conc) + " stock to destination well: " + dest_well + " for final conc " + str(conc)
+	    #print "transfer: " + str(volume_to_transfer) + " from " + stock_chem + ":" + str(stock_conc) + " stock to destination well: " + dest_well + " for final conc " + str(conc)
             total_well_vol += volume_to_transfer
             #print stock_tup
 	    instruction_list.append(instr)
@@ -93,7 +99,7 @@ for condition in product(*conc_lists):
     if volume_to_transfer > 0:
         instr = InstrClass("", dest_well, volume_to_transfer, "water", False)
         instruction_list.append(instr)
-    print "transfer: " + str(volume_to_transfer) + " from water stock to destination well: " + dest_well + " for final volume " + str(dest_final_volume)
+    #print "transfer: " + str(volume_to_transfer) + " from water stock to destination well: " + dest_well + " for final volume " + str(dest_final_volume)
     if volume_to_transfer < 0:
 	print "ERROR: stock concentrations are not concentrated enough - can not create instructions"
         sys.exit()
@@ -131,17 +137,17 @@ for chem,total_vol in stock_vols_used.iteritems():
     # add max volume safety margin
     safety_count = (total_vol // transferable_vol) + 1
     total_vol += (safety_count) * max_vol_used[chem]
-    print str(chem) + " " + str(total_vol)
+    #print str(chem) + " " + str(total_vol)
 
     num_wells_needed = int(total_vol // transferable_vol)
     if float(total_vol)%float(transferable_vol) > 0:
 	num_wells_needed += 1
-    print str(well_num) + " " + str(num_wells_needed)
+    #print str(well_num) + " " + str(num_wells_needed)
 
     vol_acc = total_vol
     chem_well_volume_acc = OrderedDict()
     for ii in range(well_num, well_num+num_wells_needed):
-	src_well = get_well_ID(ii, src_plate_type)
+	src_well = get_well_ID(ii, src_plate_type)[0]
         volume_to_transfer = src_dead_vol
         if vol_acc >= transferable_vol:
 		volume_to_transfer += transferable_vol
@@ -154,7 +160,8 @@ for chem,total_vol in stock_vols_used.iteritems():
     src_chem_well_volume_acc[chem] = chem_well_volume_acc
     well_num += num_wells_needed
 
-print src_chem_well_volume_acc
+#print src_chem_well_volume_acc
+print
 
 # calculate source wells
 for instr in instruction_list:
@@ -176,7 +183,7 @@ for instr in instruction_list:
 	print "ERROR: bug finding available well!"
 	sys.exit()
 
-print src_chem_well_volume_acc    
+#print src_chem_well_volume_acc    
 
 print "Source Plate Barcode,Source Well,Destination Plate Barcode,Destination Well,Transfer Volume"
 # print instructions:
@@ -185,6 +192,7 @@ for instr in instruction_list:
     vol = instr.volume
     print "sourcePlate," + instr.source_well + ",destPlate," + instr.dest_well + "," + str(instr.volume*1000.) + ",#" + chem
 
+print
 #print source instructions:
 for instr in src_instruction_list:
 	conc = 55500
