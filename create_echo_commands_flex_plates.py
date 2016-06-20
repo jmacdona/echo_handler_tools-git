@@ -14,6 +14,8 @@ def get_well_ID(well_number, plate_type):
 		num_rows = 48
 	elif (plate_type == "96"):
 		num_rows = 12
+	elif (plate_type == "24"):
+		num_rows = 8
 	else:
 		print "ERROR: plate type not recognised"
 		sys.exit()
