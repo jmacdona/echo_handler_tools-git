@@ -47,7 +47,7 @@ conc_lists = [
 
 # define plate type
 src_plate_type = "384"
-dest_plate_type = "384"
+dest_plate_type = "1536"
 
 
 # all volumes in uL
@@ -57,16 +57,21 @@ transferable_vol = src_max_vol - src_dead_vol
 
 dest_final_volume = 10.0
 
-
-
-
 # END of user defineable stuff
+
+
+
+
 
 instruction_list = []
 count = 0
 for condition in product(*conc_lists):
     dest_well = get_well_ID(count, dest_plate_type)
-    print "CONDITION," + dest_well + "," +str(condition)
+    #print "CONDITION," + dest_well + "," +str(condition)
+    sys.stdout.write("CONDITION," + dest_well )
+    for conc in condition:
+        sys.stdout.write("," + str(conc) )
+    sys.stdout.write("\n")
 
     total_well_vol = 0
     # loop over stocks to create instructions:
