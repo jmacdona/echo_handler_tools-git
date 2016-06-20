@@ -7,10 +7,13 @@ def get_well_ID(well_number, plate_type):
 	col = 0
 	num_rows = 0
 	letters = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','AA', 'AB', 'AC', 'AD', 'AE', 'AD', 'AE', 'AF' ]
+	
 	if (plate_type == "384"):
 		num_rows = 24
 	elif (plate_type == "1536"):
 		num_rows = 48
+	elif (plate_type == "96"):
+		num_rows = 12
 	else:
 		print "ERROR: plate type not recognised"
 		sys.exit()
