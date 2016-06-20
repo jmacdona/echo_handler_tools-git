@@ -5,22 +5,22 @@ import sys
 def get_well_ID(well_number, plate_type):
 	row = 0
 	col = 0
-	num_rows = 0
+	num_cols = 0
 	letters = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','AA', 'AB', 'AC', 'AD', 'AE', 'AD', 'AE', 'AF' ]
 	
 	if (plate_type == "384"):
-		num_rows = 24
+		num_cols = 24
 	elif (plate_type == "1536"):
-		num_rows = 48
+		num_cols = 48
 	elif (plate_type == "96"):
-		num_rows = 12
+		num_cols = 12
 	elif (plate_type == "24"):
-		num_rows = 8
+		num_cols = 8
 	else:
 		print "ERROR: plate type not recognised"
 		sys.exit()
-	row = well_number // num_rows
-	col = (well_number % num_rows) + 1
+	row = well_number // num_cols
+	col = (well_number % num_cols) + 1
     	row_letter = letters[row] 
 	return (row_letter + str(col), row_letter, str(col))
 
