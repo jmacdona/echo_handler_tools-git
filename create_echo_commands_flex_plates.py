@@ -7,6 +7,13 @@ def get_well_ID(well_number, plate_type):
 	col = 0
 	num_cols = 0
 	letters = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','AA', 'AB', 'AC', 'AD', 'AE', 'AD', 'AE', 'AF' ]
+	max_well_num = int(plate_type)
+
+	if (well_number >= max_well_num):
+		print "ERROR: maximum well number exceeded: " + str(well_number)
+		sys.exit()
+	
+
 	
 	if (plate_type == "384"):
 		num_cols = 24
@@ -16,12 +23,14 @@ def get_well_ID(well_number, plate_type):
 		num_cols = 12
 	elif (plate_type == "24"):
 		num_cols = 8
+	elif (plate_type == "6"):
+		num_cols = 3
 	else:
 		print "ERROR: plate type not recognised"
 		sys.exit()
 	row = well_number // num_cols
 	col = (well_number % num_cols) + 1
-    	row_letter = letters[row] 
+	row_letter = letters[row] 
 	return (row_letter + str(col), row_letter, str(col))
 
 class InstrClass(object):
